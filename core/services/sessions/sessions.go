@@ -22,10 +22,10 @@ import (
 
 type Session struct {
 	gorm.Model
-	SessionId string
-	CSRF      string
-	UserId    uint
-	ExpiresAt time.Time
+	SessionId string    `gorm:"index;size:36"` // UUID is 36 chars
+	CSRF      string    `gorm:"size:255"`
+	UserId    uint      `gorm:"index"`
+	ExpiresAt time.Time `gorm:"index"`
 }
 
 var Service = extend.ServiceDef{
