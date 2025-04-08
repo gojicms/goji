@@ -1,0 +1,23 @@
+{{ $dateFormat := "Jan 02, 2006 at 15:04 MST" }}
+{{partial "head.html"}}
+{{partial "body_start.html"}}
+<main class="page-article">
+    {{ $doc := doc .path_id }}
+    <article class="document">
+        <h1 class="title">{{ $doc.Title }}</h1>
+        <small class="author">Written by {{ $doc.CreatedBy.DisplayName }}</small>
+        {{ if eq $doc.CreatedAt $doc.UpdatedAt }}
+        <br><small class="date">Published: {{ toFormattedDate $doc.CreatedAt $dateFormat }}</small>
+        {{ else }}
+        <br><small class="date">Published: {{ toFormattedDate $doc.CreatedAt $dateFormat }}</small>
+        <br><small class="date">Last Updated: {{ toFormattedDate $doc.UpdatedAt $dateFormat }}</small>
+        {{ end }}
+        <hr />
+        <div class="content">
+            {{ $doc.Content | html }}
+        </div>
+        <a href="/article" class="go-back">Go Back</a>
+    </article>
+</main>
+{{partial "body_end.html"}}
+{{partial "footer.html"}}

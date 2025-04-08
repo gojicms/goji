@@ -1,0 +1,7 @@
+section.content {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    flex-grow: 1;
+    font-size: 120px;
+}

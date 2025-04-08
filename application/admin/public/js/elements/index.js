@@ -1,0 +1,5 @@
+import './editor/editor.js'
+import './alert.js'
+import './table.js'
+import './permission-editor.js'
+import './user.js'

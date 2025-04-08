@@ -1,0 +1,72 @@
+input, button, select, .form-control, .gc-button {
+    min-height: 22px;
+    padding: 6px 12px;
+    font-size: 18px;
+    background: linear-gradient(to bottom, var(--primary-color-80), white 8px);
+
+    border: 1px solid var(--neutral-color-50);
+    border-radius: 4px;
+
+    text-decoration: none;
+    color: var(--mix-base-dark);
+    display: inline-block;
+
+    /* Focus handling */
+    outline: 0 solid transparent;
+    outline-offset: 1px;
+    transition: outline-color 0.3s, border-color 0.3s, outline-width 0.3s;
+    &:focus {
+        outline-width: 4px;
+        outline-color: var(--primary-color-70);
+        border-color: var(--secondary-color-50);
+    }
+}
+
+/* Text */
+input, .form-control.text {
+    &:disabled {
+        color: var(--neutral-color-60);
+        background: linear-gradient(to bottom, var(--neutral-color-90), white 8px);
+
+    }
+}
+
+/* Buttons and pressables */
+button, input[type=submit], .gc-button {
+    border: 1px solid var(--neutral-color-40);
+    border-top-color: var(--neutral-color-60);
+    border-left-color: var(--neutral-color-60);
+
+    background: linear-gradient(to bottom, white, var(--neutral-color-90));
+    box-shadow: 1px 1px 1px 1px inset white, 0px 0px 1px 1px inset var(--neutral-color-70);
+    font-weight: 600;
+    font-size: 16px;
+
+    padding: 8px 24px;
+
+    &:hover {
+        background: linear-gradient(to top, white, var(--neutral-color-90));
+        box-shadow: 1px 1px 1px 1px inset white, 0px 0px 1px 1px inset var(--neutral-color-70);
+        outline-color: var(--neutral-color-70);
+        outline-width: 2px;
+    }
+}
+
+/* Default labels */
+label {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+    input, button, select {
+        margin-top: 8px;
+    }
+    small {
+        font-size: 12px;
+        font-weight: bold;
+        margin: 4px 0;
+    }
+}
+
+input[type=password] {
+    font-family: 'paswd', sans-serif;
+}

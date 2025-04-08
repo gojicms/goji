@@ -1,0 +1,35 @@
+FROM golang:1.21-alpine AS builder
+
+WORKDIR /app
+
+# Copy the application code
+COPY application ./application
+
+# Initialize and download dependencies
+WORKDIR /app/application
+RUN go mod init goji && \
+    go mod tidy && \
+    go mod download
+
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -o goji main.go
+
+# Use a minimal alpine image for the final stage
+FROM alpine:latest
+
+WORKDIR /app
+
+# Copy the binary from builder
+COPY --from=builder /app/application/goji .
+COPY --from=builder /app/application/admin ./admin
+COPY --from=builder /app/application/web ./web
+
+# Create a non-root user
+RUN adduser -D -g '' appuser
+RUN chown -R appuser:appuser /app
+
+USER appuser
+
+EXPOSE 8080
+
+CMD ["./goji"] 

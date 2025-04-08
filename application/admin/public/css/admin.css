@@ -1,0 +1,31 @@
+header {
+    padding: 2px 16px;
+    background: linear-gradient(-90deg, var(--primary-color-80), var(--primary-color-70));
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+main {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    align-self: center;
+    width: 100%;
+    & > section {
+        border-left: 1px solid var(--primary-color-50);
+        border-top: 1px solid var(--primary-color-50);
+        flex-grow: 1;
+        box-shadow: inset 2px 2px 5px var(--primary-color-80);
+    }
+}
+
+footer {
+    padding: 32px;
+    background: linear-gradient(to bottom, var(--primary-color-80), #fff);
+    border-top: 1px solid var(--secondary-color-50);
+    outline: 1px solid var(--primary-color-50);
+}

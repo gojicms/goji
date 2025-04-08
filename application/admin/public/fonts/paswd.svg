@@ -1,0 +1,8 @@
+<?xml version="1.0" standalone="no"?>
+<svg>
+<font id="PasswordFont" horiz-adv-x="56" >
+<font-face units-per-em="100" ascent="80" descent="-20" />
+<glyph unicode=" " horiz-adv-x="56" d="" />
+<glyph unicode="•" horiz-adv-x="56" d="M28 52 Q28 52 28 52 Q32 32 48 28 Q32 24 28 4 Q23.98642 23.93815 8 28 Q24 32 28 52 z" />
+</font>
+</svg>

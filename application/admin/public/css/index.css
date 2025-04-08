@@ -1,0 +1,76 @@
+@import url('fonts.css');
+@import url('admin.css');
+@import url('elements/index.css');
+@import url('structure/index.css');
+
+:root {
+  /* The base color that mixing will occur on */
+  --mix-base: rgb(255,255,255);
+  --mix-base-dark: rgb(0, 0, 0);
+
+  --primary-color: rgb(142, 195, 37);
+  --secondary-color: rgb(71, 184, 56);
+  --neutral-color: rgb(195, 195, 195);
+  --border-radius: 8px;
+
+  --primary-color-10: color-mix(in srgb, var(--primary-color), var(--mix-base-dark) 45%);
+  --primary-color-20: color-mix(in srgb, var(--primary-color), var(--mix-base-dark) 40%);
+  --primary-color-30: color-mix(in srgb, var(--primary-color), var(--mix-base-dark) 35%);
+  --primary-color-40: color-mix(in srgb, var(--primary-color), var(--mix-base-dark) 30%);
+  --primary-color-50: color-mix(in srgb, var(--primary-color), var(--mix-base) 20%);
+  --primary-color-60: color-mix(in srgb, var(--primary-color), var(--mix-base) 40%);
+  --primary-color-70: color-mix(in srgb, var(--primary-color), var(--mix-base) 60%);
+  --primary-color-80: color-mix(in srgb, var(--primary-color), var(--mix-base) 80%);
+  --primary-color-90: color-mix(in srgb, var(--primary-color), var(--mix-base) 90%);
+
+  --secondary-color-10: color-mix(in srgb, var(--secondary-color), var(--mix-base-dark) 45%);
+  --secondary-color-20: color-mix(in srgb, var(--secondary-color), var(--mix-base-dark) 40%);
+  --secondary-color-30: color-mix(in srgb, var(--secondary-color), var(--mix-base-dark) 35%);
+  --secondary-color-40: color-mix(in srgb, var(--secondary-color), var(--mix-base-dark) 30%);
+  --secondary-color-50: color-mix(in srgb, var(--secondary-color), var(--mix-base) 20%);
+  --secondary-color-60: color-mix(in srgb, var(--secondary-color), var(--mix-base) 40%);
+  --secondary-color-70: color-mix(in srgb, var(--secondary-color), var(--mix-base) 60%);
+  --secondary-color-80: color-mix(in srgb, var(--secondary-color), var(--mix-base) 80%);
+  --secondary-color-90: color-mix(in srgb, var(--secondary-color), var(--mix-base) 90%);
+
+  --neutral-color-10: color-mix(in srgb, var(--neutral-color), var(--mix-base-dark) 45%);
+  --neutral-color-20: color-mix(in srgb, var(--neutral-color), var(--mix-base-dark) 40%);
+  --neutral-color-30: color-mix(in srgb, var(--neutral-color), var(--mix-base-dark) 35%);
+  --neutral-color-40: color-mix(in srgb, var(--neutral-color), var(--mix-base-dark) 30%);
+  --neutral-color-50: color-mix(in srgb, var(--neutral-color), var(--mix-base) 20%);
+  --neutral-color-60: color-mix(in srgb, var(--neutral-color), var(--mix-base) 40%);
+  --neutral-color-70: color-mix(in srgb, var(--neutral-color), var(--mix-base) 60%);
+  --neutral-color-80: color-mix(in srgb, var(--neutral-color), var(--mix-base) 80%);
+  --neutral-color-90: color-mix(in srgb, var(--neutral-color), var(--mix-base) 90%);  
+
+  --success: hsl(101, 31%, 43%);
+  --warning: hsl(54, 39%, 48%);
+  --danger: hsl(8, 44%, 50%);
+
+  --font-family-serif: 'Garamond', 'Merriweather', serif;
+  --font-family-sans-serif: 'Open Sans', sans-serif;
+}
+
+::selection {
+  background-color: var(--primary-color-20);
+  color: white;
+  padding: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  body, html {
+    background-color: rgb(36, 36, 36);
+    color: white;
+  }
+  :root {
+    --primary-color: rgb(84, 190, 151);
+    --mix-base: rgb(49, 49, 49);
+    --mix-base-dark: rgb(255,255,255);
+  }
+}
+
+/* Resets */
+body, html { margin: 0; }
+body { display: flex; flex-direction: column; width: 100%; min-height: 100vh; }
+* { box-sizing: border-box; }
+h1,h2,h3,h4,h5,h6 { margin: 0; padding: 0; }

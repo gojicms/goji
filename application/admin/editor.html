@@ -1,0 +1,10 @@
+{{style "/admin/public/css/editor.css"}}
+{{script "/admin/public/js/core.js" "module" }}
+{{partial "head.html"}}
+{{partial "body_start.html"}}
+<main>
+    {{partial "sidenav.html"}}
+    {{ .contents | html }}
+</main>
+{{partial "body_end.html"}}
+{{partial "footer.html"}}

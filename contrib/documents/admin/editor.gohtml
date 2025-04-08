@@ -1,0 +1,34 @@
+<section class="editor">
+    {{ if and .result .result.status }}
+        <gc-alert autoClose type="{{.result.status}}" class="w-100">{{.result.message}}</gc-alert>
+    {{ end }}
+    <form method="post" class="m-4">
+        <gc-editor>
+            <gc-editor-top>
+                {{ if .document.Title }}
+                    <h1>Edit Document</h1>
+                {{ else }}
+                    <h1>New Document</h1>
+                {{ end }}
+            </gc-editor-top>
+            <gc-editor-left>
+                <input class="w-100" name="title" value="{{ .document.Title }}" placeholder="Title" />
+                <gc-html-editor id="editor" name="content">
+                    {{ .document.Content | html }}
+                </gc-html-editor>
+            </gc-editor-left>
+            <gc-editor-right>
+                <gc-card>
+                    <strong>Created On</strong>
+                    <p title="{{ .document.UpdatedAt | toDateTime }}">{{ .document.CreatedAt | toFuzzyTime }}</p>
+                    <strong>Last Updated</strong>
+                    <p title="{{ .document.UpdatedAt | toDateTime }}">{{ .document.UpdatedAt | toFuzzyTime }}</p>
+                    <button class="align-end" name="action" value="delete">Delete</button>
+                </gc-card>
+            </gc-editor-right>
+            <gc-editor-bottom>
+                <button class="align-start" name="action" value="save">Save</button>
+            </gc-editor-bottom>
+        </gc-editor>
+    </form>
+</section>

@@ -1,0 +1,41 @@
+gc-table > table, .gc-table {
+    width: 100%;
+    padding: 0;
+    border-collapse: collapse;
+
+    thead {
+        th {
+            padding: 8px;
+            &:not(:last-child) {
+                border-right: 1px solid var(--neutral-color-80);
+            }
+        }
+    }
+    tbody {
+        tr:nth-child(odd) {
+            background-color: var(--neutral-color-90);
+            td:not(:last-child) {
+                border-right: 1px solid var(--neutral-color-70);
+            }
+            &:hover {
+                background-color: var(--neutral-color-80);
+            }
+        }
+        tr:nth-child(even) {
+            td:not(:last-child) {
+                border-right: 1px solid var(--neutral-color-80);
+            }
+            &:hover {
+                background-color: var(--neutral-color-80);
+            }
+        }
+    }
+
+    td {
+        padding: 12px 8px;
+
+        a {
+            color: var(--primary-color-10);
+        }
+    }
+}

@@ -1,0 +1,12 @@
+FROM golang:1.21-alpine
+
+WORKDIR /app/src
+
+# Install air for hot reloading
+RUN go install github.com/cosmtrek/air@latest
+
+# Expose port
+EXPOSE 8080
+
+# Start air for hot reloading
+CMD ["air", "-c", ".air.toml"] 

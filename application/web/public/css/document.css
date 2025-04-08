@@ -1,0 +1,79 @@
+article.document-listing {
+    padding-bottom: 24px;
+    border-bottom: 1px solid black;
+    header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        .title {
+            font-family: var(--font-serif);
+            margin-bottom: 0;
+            font-weight: 200;
+        }
+        .meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            .author {
+                margin: 0;
+                font-size: 12px;
+                font-weight: 400;
+            }
+            .date {
+                margin: 0;
+                font-size: 12px;
+                font-weight: 400;
+            }
+        }
+    }
+
+    @media (max-width: 600px) {
+        header {
+            align-items: flex-start;
+            flex-direction: column;
+            .meta {
+                align-items: flex-start;
+            }
+        }
+    }
+}
+
+article.document {
+    font-family: "PT Serif", "Droid Serif", serif;
+
+    .title {
+        font-family: var(--font-serif);
+        font-weight: 100;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: "PT Serif", "Droid Serif", serif;
+    }
+
+    & h1:first-child {
+        font-size: 48px;
+        margin: 0;
+    }
+
+    .content {
+        letter-spacing: 0.5px;
+        line-height: 1.4;
+        font-size: 22px;
+        max-width: 100vw;
+    }
+
+    .go-back {
+        display: inline-block;
+        margin-top: 62px;
+    }
+
+    @media (max-width: 1950px) {
+        .title {
+            font-size: 22px !important;
+        }
+        .content {
+            font-size: 16px;
+        }
+    }
+}

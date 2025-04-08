@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DEPLOY_DIR="$(dirname "$SCRIPT_DIR")/docker"
+
+# Change to the deploy directory
+cd "$DEPLOY_DIR"
+
+# Run the deployment script
+./deploy.sh
+
+# Exit with the deployment script's status
+exit $? 

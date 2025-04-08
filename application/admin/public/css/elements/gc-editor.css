@@ -1,0 +1,27 @@
+gc-editor {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to full width for single column rows */
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+        'top top'
+        'left right'
+        'bottom bottom';
+    gap: 10px; /* Optional: Adjusts the spacing between grid items */
+}
+
+gc-editor-top { grid-area: top; }
+gc-editor-left { grid-area: left; }
+gc-editor-right { grid-area: right; }
+gc-editor-bottom { grid-area: bottom; }
+
+gc-editor-top, gc-editor-left, gc-editor-right, gc-editor-bottom {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+@media (min-width: 500px) { /* Adjust the breakpoint as needed */
+    gc-editor { grid-template-columns: 70% minmax(0, 30%); }
+    gc-editor-left { grid-column: 1 / 2; }
+    gc-editor-right { grid-column: 2 / 3; }
+}

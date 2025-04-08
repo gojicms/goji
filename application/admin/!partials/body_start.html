@@ -1,0 +1,15 @@
+<body>
+  {{ if .site_errors }}
+  {{ range .site_errors }}
+  <gc-alert type="error" dismissible>{{ . }}</gc-alert>
+  {{ end }}
+  {{ end }}
+  <header>
+    <gc-branding>
+      <img src="/admin/public/img/logo.svg" width="136" height="78" alt="logo" />
+    </gc-branding>
+    {{ if .user }}
+      <gc-user avatar="https://www.gravatar.com/avatar/{{.user.Email|lower|md5}}" title="{{ .user.DisplayName }}">
+      </gc-user>
+    {{ end }}
+  </header>

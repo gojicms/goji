@@ -1,0 +1,32 @@
+<section class="editor">
+    {{ if and .result .result.status }}
+        <gc-alert autoClose type="{{.result.status}}" class="w-100">{{.result.message}}</gc-alert>
+    {{ end }}
+    <form method="post" class="m-4">
+        <gc-editor>
+            <gc-editor-top>
+                <h1>Site Settings</h1>
+            </gc-editor-top>
+            <gc-editor-left>
+                <label>
+                    Site Name
+                    <small>Give a descriptive name for this site to help users know the identity of your site</small>
+                    <input class="w-100" name="title" value="{{ .site.title }}" placeholder="Title" />
+                </label>
+                <label>
+                    Site Description
+                    <small>Describe the purpose of your site</small>
+                    <input class="w-100" name="description" value="{{ .site.description }}" placeholder="Title" />
+                </label>
+                <label>
+                    Site Authors
+                    <small>List the creators of this website</small>
+                    <input class="w-100" name="authors" value="{{ .site.authors }}" placeholder="Title" />
+                </label>
+            </gc-editor-left>
+            <gc-editor-bottom>
+                <button class="align-start" type="submit">Save</button>
+            </gc-editor-bottom>
+        </gc-editor>
+    </form>
+</section>

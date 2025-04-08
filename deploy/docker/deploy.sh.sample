@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Get current timestamp for the deploy folder
+TIMESTAMP=$(date +"%m%d%y%H%M")
+DEPLOY_DIR="deploys/deploy-$TIMESTAMP"
+
+# Create deploy directory
+mkdir -p "$DEPLOY_DIR"
+
+# Copy application files
+cp -r application/* "$DEPLOY_DIR/"
+
+# Build the new container
+docker-compose build app
+
+# Start the new container with a different name
+NEW_CONTAINER="goji_$TIMESTAMP"
+docker-compose up -d --no-deps --scale app=2 app
+NEW_APP_ID=$(docker-compose ps -q app | tail -n 1)
+
+# Wait for the new container to be healthy
+echo "Waiting for new container to be healthy..."
+while ! docker inspect --format='{{.State.Health.Status}}' "$NEW_APP_ID" | grep -q "healthy"; do
+    sleep 1
+done
+
+# Stop the old container
+OLD_APP_ID=$(docker-compose ps -q app | head -n 1)
+docker stop "$OLD_APP_ID"
+
+# Scale back to 1 container
+docker-compose up -d --no-deps --scale app=1 app
+
+echo "Deployment complete! New version is running." 

@@ -1,0 +1,65 @@
+<section class="editor">
+    {{ if and .result .result.status }}
+        <gc-alert autoClose type="{{.result.status}}" class="w-100">{{.result.message}}</gc-alert>
+    {{ end }}
+    <form method="post" class="m-4">
+        <gc-editor>
+            <gc-editor-top>
+                {{ if .create }}
+                    <h1>Create User</h1>
+                {{ else }}
+                    <h1>Edit User</h1>
+                {{ end }}
+            </gc-editor-top>
+            <gc-editor-left>
+                <h2>User Details</h2>
+                <label>
+                    Display Name
+                    <input class="w-100" name="display_name" {{if not .create}}value="{{ .user.DisplayName }}"{{end}} />
+                </label>
+                <label>
+                    User Name
+                    <input {{if not .create}}disabled{{end}} class="w-100" name="user_name" {{if not .create}}value="{{ .user.Username }}"{{end}} />
+                </label>
+                <label>
+                    Email Address
+                    <input class="w-100" name="email" {{if not .create}}value="{{ .user.Email }}"{{end}} />
+                </label>
+                <label>
+                    Group
+                    <select class="w-100" name="group">
+                        {{ $groupName := "user" }}
+                        {{ if not .create }}
+                        {{ $groupName = .user.GroupName }}
+                        {{ end }}
+                        {{ range .groups }}
+                        <option value="{{ .Name }}" {{if eq $groupName .Name}}selected{{end}}>{{ .Name }}</option>
+                        {{ end }}
+                    </select>
+                </label>
+                <h2>Authentication</h2>
+                <label>
+                    Password
+                    {{ if not .create }}
+                    <small>Leave blank to maintain current password, supply a password to update.</small>
+                    {{ end }}
+                    <input class="w-100" name="password" type="password" />
+                </label>
+            </gc-editor-left>
+            <gc-editor-right>
+                {{ if not .create }}
+                <gc-card>
+                    <strong>Created On</strong>
+                    <p>{{ .user.CreatedAt | toDateTime }}</p>
+                    <strong>Last Updated</strong>
+                    <p>{{ .user.UpdatedAt | toDateTime }}</p>
+                    <button class="align-end" name="action" value="delete">Delete</button>
+                </gc-card>
+                {{ end }}
+            </gc-editor-right>
+            <gc-editor-bottom>
+                <button class="align-start" name="action" value="save">Save</button>
+            </gc-editor-bottom>
+        </gc-editor>
+    </form>
+</section>

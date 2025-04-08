@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: alpine/sqlite
+    volumes:
+      - db_data:/data
+    restart: always
+    environment:
+      - SQLITE_DATABASE=goji.db
+    healthcheck:
+      test: ["CMD", "sqlite3", "/data/goji.db", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_DSN=sqlite:///data/goji.db
+      - GO_ENV=production
+    volumes:
+      - db_data:/data
+    restart: always
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data: 

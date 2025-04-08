@@ -1,0 +1,17 @@
+{{range (docs 10 0 "updated_at desc") }}
+<article class="document-listing">
+    <header>
+        <h2 class="title">{{.Title}}</h2>
+        <div class="meta">
+            <p class="author">Written By <span class="author">{{.CreatedBy.DisplayName}}</span></p>
+            <p class="date">{{.UpdatedAt.Format "January 2, 2006"}}</p>
+        </div>
+    </header>
+    <section class="snippet">
+        <p>{{.Summary 200}}</p>
+    </section>
+    <footer>
+        <a href="/article/{{ .ID }}" class="read-more">Read More</a>
+    </footer>
+</article>
+{{end}}

@@ -1,0 +1,46 @@
+package main
+
+import (
+	"time"
+
+	"github.com/gojicms/goji/core"
+	"github.com/gojicms/goji/core/config"
+	"github.com/gojicms/goji/core/utils"
+	"github.com/gojicms/goji/core/utils/log"
+	_ "github.com/mattn/go-sqlite3"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
+
+// This represents a standard installation of Goji
+func main() {
+	// Prepares the server
+	core.PrepareServer(config.ApplicationConfig{
+		Host: "0.0.0.0",
+		// This determines the route for web content
+		RootUrl: "",
+		// And this determines the route for APIs
+		ApiRootUrl: "/api/v1",
+		// If true, certain features will be enabled to help track bugs down
+		Debug: true,
+		// Sets a maximum size for templates; any templates that exceed this will not be processed
+		TemplateFileSizeLimit: 1024 * 1024 * 10,
+		// Sets the logs that are enabled
+		LogLevel: log.LogError | log.LogWarn | log.LogInfo | log.LogVerbose,
+		// Configure how authentication works
+		Auth: config.AuthConfig{
+			// This identifies the name for auth cookies
+			CookieLifetime:  time.Hour,
+			RefreshLifetime: time.Minute * 45,
+		},
+		// Configure a basic SQLite Database; Not ideal for production... perhaps?
+		Database: config.DatabaseConfig{
+			Connector: func() gorm.Dialector {
+				return sqlite.Open(utils.GetEnv("DB_DSN", "file:application.db?cache=shared&mode=rwc"))
+			},
+		},
+	})
+
+	// Start server
+	core.StartServer()
+}

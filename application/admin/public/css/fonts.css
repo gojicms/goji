@@ -1,0 +1,5 @@
+@font-face {
+    font-family: 'paswd';
+    src: url('/admin/public/fonts/paswd.eot') format('embedded-opentype'),
+         url('/admin/public/fonts/paswd.ttf') format('truetype');
+}

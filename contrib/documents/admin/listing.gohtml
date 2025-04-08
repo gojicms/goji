@@ -1,0 +1,23 @@
+<section class="editor p-4 flex gap-4">
+    <h1>Document</h1>
+    <gc-table count="{{.count}}" offset="{{.offset}}" total="{{.totalItems}}">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Last Modified</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range .items }}
+                    <tr>
+                        <td><a href="/admin/docs/{{ .ID }}">{{ .Title }}</a></td>
+                        <td>{{ .CreatedBy.DisplayName }}</td>
+                        <td title="{{ .UpdatedAt | toDateTime }}">{{ .UpdatedAt | toFuzzyTime }}</td>
+                    </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </gc-table>
+</section>

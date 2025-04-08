@@ -1,0 +1,14 @@
+.editor {
+    width: 100%;
+    overflow: hidden;
+    h1 {
+        border-bottom: 4px solid var(--primary-color-70);
+        padding-bottom: 4px;
+        margin-bottom: 16px;
+        font-family: var(--font-family-serif);
+    }
+    h2 {
+        margin: 16px 0 8px 0;
+        border-bottom: 2px solid var(--primary-color-70);
+    }
+}

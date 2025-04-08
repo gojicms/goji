@@ -1,0 +1,9 @@
+<gc-sidenav>
+    {{ range .sideNav }}
+    {{ $parentActive := .active }}
+    <a href="{{ .path }}" class="nav{{ if .active }} active{{end}}">{{ .title }}</a>
+    {{ range .children }}
+    <a href="{{ .path }}" class="subnav{{ if .active }} active{{end}} {{ if $parentActive }} parentactive{{end}}">{{ .title }}</a>
+    {{ end }}
+    {{ end }}
+</gc-sidenav>

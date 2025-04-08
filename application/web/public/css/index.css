@@ -1,0 +1,67 @@
+@import "./document.css";
+
+:root {
+  --primary-color: #7069c1;
+  --font-serif: Palatino, Bookman, "Century Schoolbook", "Times New Roman", Georgia, serif;
+  --size-mobile: 600px;
+
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  font-family: sans-serif;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration-style: dotted;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  &>header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px 32px;
+    gap: 16px;
+    background: color-mix(in srgb, white 90%, var(--primary-color));
+    a[href="/"] {
+      text-decoration: none;
+      color: color-mix(in srgb, black 50%, var(--primary-color));
+    }
+    .logo {
+      width: 48px;
+      height: 48px;
+    }
+  }
+  &>footer {
+    padding: 32px;
+    background: color-mix(in srgb, black 40%, var(--primary-color));
+    color: white;
+  }
+}
+
+main {
+  flex-grow: 1;
+}
+
+.home, .articles, .page-article {
+  margin: 8px auto;
+  max-width: 800px;
+  width: 100%;
+}
+
+.home, .articles {
+  padding: 24px;
+}
+
+.page-article {
+  padding: 24px;
+}

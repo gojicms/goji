@@ -1,0 +1,16 @@
+{
+  "name": "goji-build",
+  "version": "1.0.0",
+  "description": "Build tools for Goji",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:app\" \"npm run dev:modules\"",
+    "dev:app": "node scripts/dev-app.js",
+    "dev:modules": "node scripts/dev-modules.js",
+    "build:modules": "node scripts/build-modules.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "chokidar": "^3.6.0"
+  }
+} 

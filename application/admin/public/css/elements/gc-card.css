@@ -1,0 +1,16 @@
+gc-card {
+    min-height: 30px;
+    border-radius: 12px;
+    display: inline-flex;
+    flex-direction: column;
+    padding: 16px;
+    border: 1px solid var(--neutral-color-60);
+    background: linear-gradient(to bottom, var(--primary-color-90), transparent 12px, transparent 100%)
+}
+
+@media (prefers-color-scheme: dark) {
+    gc-card {
+        border-color: var(--neutral-color-80);
+        border-width: 2px;;
+    }
+}
