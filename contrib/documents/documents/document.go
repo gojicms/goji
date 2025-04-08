@@ -11,11 +11,11 @@ import (
 
 type Document struct {
 	gorm.Model
-	Title       string      `json:"title"`
-	Description string      `json:"description"`
-	Content     string      `json:"content"`
+	Title       string      `json:"title" gorm:"size:255"`
+	Description string      `json:"description" gorm:"size:1000"`
+	Content     string      `json:"content" gorm:"type:text"`
 	CreatedBy   *users.User `json:"-" gorm:"foreignKey:CreatedById;constraint:OnUpdate:NO ACTION,OnDelete:SET NULL;"`
-	CreatedById *uint       `json:"-"`
+	CreatedById *uint       `json:"-" gorm:"index"`
 }
 
 // Summary returns a summary of the document content

@@ -9,7 +9,7 @@ import (
 
 type Group struct {
 	gorm.Model
-	Name        string
+	Name        string    `gorm:"unique"`
 	Permissions utils.CSV `gorm:"type:VARCHAR(512)"`
 }
 

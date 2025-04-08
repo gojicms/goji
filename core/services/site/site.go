@@ -19,8 +19,8 @@ var siteConfigCache = make(map[string]string)
 //////////////////////////////////
 
 type SiteConfig struct {
-	Key   string `gorm:"primarykey"`
-	Value string
+	Key   string `gorm:"primarykey;size:255"`
+	Value string `gorm:"type:text"`
 }
 
 //////////////////////////////////
