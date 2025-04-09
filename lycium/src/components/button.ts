@@ -44,13 +44,16 @@ export class LyButton extends LitElement {
   @property()
   disabled = false;
 
+  @property()
+  label = 'Button';
+
   render() {
     return html`
       <button
         class="ly-button ly-button--${this.variant}"
         ?disabled=${this.disabled}
       >
-        <slot></slot>
+        <slot>${this.label}</slot>
       </button>
     `;
   }
