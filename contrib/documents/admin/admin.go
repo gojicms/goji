@@ -9,7 +9,7 @@ import (
 	"github.com/gojicms/goji/core/extend"
 	"github.com/gojicms/goji/core/server"
 	"github.com/gojicms/goji/core/server/httpflow"
-	"github.com/gojicms/goji/core/services/auth/users"
+	"github.com/gojicms/goji/core/types"
 	. "github.com/gojicms/goji/core/utils"
 )
 
@@ -50,7 +50,7 @@ func newDocEditor(flow *httpflow.HttpFlow) ([]byte, error) {
 	}
 
 	if flow.Request.Method == "POST" {
-		user := flow.Get("user").(*users.User)
+		user := flow.Get("user").(*types.User)
 
 		result["status"] = "success"
 		result["message"] = "Document created."

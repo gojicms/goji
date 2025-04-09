@@ -9,8 +9,8 @@ import (
 	"github.com/gojicms/goji/core/extend"
 	"github.com/gojicms/goji/core/server"
 	"github.com/gojicms/goji/core/server/httpflow"
-	"github.com/gojicms/goji/core/services/auth/groups"
-	"github.com/gojicms/goji/core/services/auth/users"
+	"github.com/gojicms/goji/core/services"
+	"github.com/gojicms/goji/core/types"
 	"github.com/gojicms/goji/core/utils"
 )
 
@@ -30,11 +30,13 @@ func Register() {
 		Render: func(flow *httpflow.HttpFlow) ([]byte, error) {
 			flow.Append("templateData", "title", "Goji - Users")
 
+			userService := services.GetServiceOfType[services.UserService]("users")
+
 			offset := utils.OrDefault(flow.Request.URL.Query().Get("offset"), "0")
 			count := utils.OrDefault(flow.Request.URL.Query().Get("count"), "10")
 
-			userItems, _ := users.GetAll()
-			userCount, _ := users.Count()
+			userItems, _ := userService.GetAll()
+			userCount, _ := userService.Count()
 
 			content, err := server.RenderTemplate(listingHtml, utils.Object{
 				"items":     userItems,
@@ -56,7 +58,9 @@ func Register() {
 		Render: func(flow *httpflow.HttpFlow) ([]byte, error) {
 			flow.Append("templateData", "title", "Goji - Create User")
 
-			allGroups, err := groups.GetAll()
+			userService := services.GetServiceOfType[services.UserService]("users")
+			groupService := services.GetServiceOfType[services.GroupService]("groups")
+			allGroups, err := groupService.GetAll()
 			if err != nil {
 				d := []byte(fmt.Sprintf("<b>%s</b>", err.Error()))
 				return d, nil
@@ -83,7 +87,7 @@ func Register() {
 					goto render
 				}
 
-				var user = users.User{
+				var user = types.User{
 					Username:    userName,
 					DisplayName: displayName,
 					Password:    password,
@@ -91,8 +95,7 @@ func Register() {
 					Email:       email,
 				}
 
-				_, err = users.Create(&user)
-
+				_, err = userService.Create(&user)
 			}
 		render:
 			content, err := server.RenderTemplate(editorHtml, utils.Object{
@@ -122,13 +125,15 @@ func Register() {
 				"message": nil,
 			}
 
-			user, err := users.GetById(uint(idInt))
+			userService := services.GetServiceOfType[services.UserService]("users")
+			user, err := userService.GetByID(uint(idInt))
 			if err != nil {
 				d := []byte(fmt.Sprintf("<b>%s</b>", err.Error()))
 				return d, nil
 			}
 
-			allGroups, err := groups.GetAll()
+			groupService := services.GetServiceOfType[services.GroupService]("groups")
+			allGroups, err := groupService.GetAll()
 			if err != nil {
 				d := []byte(fmt.Sprintf("<b>%s</b>", err.Error()))
 				return d, nil
@@ -138,7 +143,7 @@ func Register() {
 				action := flow.PostFormValue("action")
 
 				if action == "delete" {
-					err := users.Delete(user)
+					err := userService.Delete(user)
 					if err != nil {
 						result["status"] = "error"
 						result["message"] = "Failed to delete user: " + err.Error()
@@ -155,7 +160,7 @@ func Register() {
 					password := flow.PostFormValue("password")
 					email := flow.PostFormValue("email")
 
-					groupObj, err := groups.GetByName(group)
+					groupObj, err := groupService.GetByName(group)
 					if err != nil {
 						result["status"] = "error"
 						result["message"] = "Failed to update user: " + err.Error()
@@ -171,7 +176,7 @@ func Register() {
 						user.Password = password
 					}
 
-					err = users.Update(user)
+					err = userService.Update(user)
 					if err != nil {
 						result["status"] = "error"
 						result["message"] = "Failed to update user: " + err.Error()

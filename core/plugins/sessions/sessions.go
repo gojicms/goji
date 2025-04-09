@@ -9,7 +9,8 @@ import (
 	"github.com/gojicms/goji/core/database"
 	"github.com/gojicms/goji/core/extend"
 	"github.com/gojicms/goji/core/server/httpflow"
-	"github.com/gojicms/goji/core/services/auth/users"
+	"github.com/gojicms/goji/core/services"
+	"github.com/gojicms/goji/core/types"
 	"github.com/gojicms/goji/core/utils"
 	"github.com/gojicms/goji/core/utils/log"
 	"github.com/google/uuid"
@@ -28,9 +29,10 @@ type Session struct {
 	ExpiresAt time.Time `gorm:"index"`
 }
 
-var Service = extend.ServiceDef{
+var Plugin = extend.PluginDef{
 	Name:         "sessions",
 	FriendlyName: "Sessions",
+	Description:  "Session management",
 	Internal:     true,
 	Resources:    []extend.ResourceDef{},
 	OnInit: func() error {
@@ -40,15 +42,19 @@ var Service = extend.ServiceDef{
 		_ = db.AutoMigrate(&Session{})
 
 		extend.AddMiddleware(extend.NewMiddleware("*", "*", 0, func(flow *httpflow.HttpFlow) {
-			var user *users.User
+			var user *types.User
 			session, _ := EnsureSession(flow)
 
+			userService := services.GetServiceOfType[services.UserService]("users")
+
 			if session != nil {
-				user, _ = users.GetById(session.UserId)
+				user, _ = userService.GetByID(session.UserId)
 				flow.Set("session", session)
 				flow.Set("user", user)
 				flow.Append("templateData", "user", user)
 			}
+
+			flow.Append("templateData", "isAuthenticated", session != nil)
 		}))
 		return nil
 	},
@@ -210,9 +216,9 @@ func findSessionById(id string) *Session {
 	return &session
 }
 
-func getUserForSession(sessionId string) *users.User {
+func getUserForSession(sessionId string) *types.User {
 	db := database.GetDB()
-	var user users.User
+	var user types.User
 
 	session := findSessionById(sessionId)
 

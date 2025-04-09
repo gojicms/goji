@@ -12,7 +12,7 @@ var coreInfoResource = extend.ResourceDef{
 	Handler: func(flow *httpflow.HttpFlow) {
 		var services []interface{}
 
-		for _, service := range extend.GetServices() {
+		for _, service := range extend.GetPlugins() {
 			services = append(services, service.ToApiJson())
 		}
 

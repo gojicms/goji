@@ -110,6 +110,7 @@ func RenderString(content []byte, contentType string, options RenderOptions) (*H
 }
 
 // RenderErrorPage serveErrorPage serves an error page with the appropriate status code
+// DEPRECATED: This will be removed in favor of a new approach soon.
 func RenderErrorPage(statusCode int, message string, options RenderOptions) *HttpServeResponse {
 	errorRoot := "public/"
 	if options.ErrorRoot != "" {

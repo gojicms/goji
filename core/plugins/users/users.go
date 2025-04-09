@@ -1,4 +1,4 @@
-package auth
+package users
 
 import (
 	"encoding/base64"
@@ -6,11 +6,11 @@ import (
 
 	"github.com/gojicms/goji/core/database"
 	"github.com/gojicms/goji/core/extend"
+	"github.com/gojicms/goji/core/plugins/sessions"
+	"github.com/gojicms/goji/core/plugins/users/admin"
 	"github.com/gojicms/goji/core/server/httpflow"
-	"github.com/gojicms/goji/core/services/auth/admin"
-	"github.com/gojicms/goji/core/services/auth/groups"
-	"github.com/gojicms/goji/core/services/auth/users"
-	"github.com/gojicms/goji/core/services/sessions"
+	"github.com/gojicms/goji/core/services"
+	"github.com/gojicms/goji/core/types"
 	"github.com/gojicms/goji/core/utils"
 	"github.com/gojicms/goji/core/utils/log"
 	"github.com/google/uuid"
@@ -24,10 +24,12 @@ var loginResource = extend.ResourceDef{
 	HttpValidator: extend.NewHttpValidator("GET", "/admin/login"),
 	Description:   "Logs in to the application",
 	Handler: func(flow *httpflow.HttpFlow) {
+		userService := services.GetServiceOfType[services.UserService]("users")
+
 		data := make(map[string]interface{})
 		err := flow.DecodeJSONBody(&data)
 		if err != nil {
-			flow.WriteErrorJson(http.StatusInternalServerError, err.Error())
+			flow.WriteErrorJson(http.StatusInternalServerError, "Failed to decode JSON body: %s", err.Error())
 		}
 
 		username := data["username"].(string)
@@ -42,7 +44,7 @@ var loginResource = extend.ResourceDef{
 			flow.WriteErrorJson(http.StatusBadRequest, "username or password is empty")
 		}
 
-		user, err := users.ValidateLogin(data["username"].(string), data["password"].(string))
+		user, err := userService.ValidateLogin(data["username"].(string), data["password"].(string))
 
 		if err != nil {
 			flow.WriteErrorJson(http.StatusForbidden, "username or password is invalid")
@@ -68,7 +70,7 @@ var logoutResource = extend.ResourceDef{
 // Service Definition           //
 //////////////////////////////////
 
-var Service = extend.ServiceDef{
+var Plugin = extend.PluginDef{
 	Name:         "authentication",
 	FriendlyName: "Authentication",
 	Resources: []extend.ResourceDef{
@@ -78,46 +80,54 @@ var Service = extend.ServiceDef{
 	OnInit: func() error {
 		admin.Register()
 
-		database.AutoMigrate(&users.User{})
-		database.AutoMigrate(&groups.Group{})
+		database.AutoMigrate(&types.User{})
+		database.AutoMigrate(&types.Group{})
+
+		// Register our service providers
+		services.RegisterService(&UserProvider{})
+		services.RegisterService(&GroupProvider{})
+
+		// Get our service providers
+		userService := services.GetServiceOfType[services.UserService]("users")
+		groupService := services.GetServiceOfType[services.GroupService]("groups")
 
 		// Ensure the default groups exist
-		if c, _ := groups.Count(); c == 0 {
-			_ = groups.Create(&groups.Group{
+		if c, _ := groupService.Count(); c == 0 {
+			_ = groupService.Create(&types.Group{
 				Name: "administrator",
 				Permissions: utils.CSV{
 					"admin",
 					"user:view", "user:edit", "user:delete", "user:add",
 					"document:view", "document:add", "document:edit", "document:delete"},
 			})
-			_ = groups.Create(&groups.Group{
+			_ = groupService.Create(&types.Group{
 				Name:        "editor",
 				Permissions: utils.CSV{"admin", "document:view", "document:add", "document:edit", "document:delete"},
 			})
-			_ = groups.Create(&groups.Group{
+			_ = groupService.Create(&types.Group{
 				Name:        "user",
 				Permissions: utils.CSV{},
 			})
-			if c, _ = groups.Count(); c == 0 {
+			if c, _ = groupService.Count(); c == 0 {
 				log.Fatal(log.RCDatabase, "Auth", "Failed to create default user groups")
 			}
 		}
 
 		// Ensure at least one user exists!
-		if c, _ := users.Count(); c == 0 {
-			group, err := groups.GetByName("administrator")
+		if c, _ := userService.Count(); c == 0 {
+			group, err := groupService.GetByName("administrator")
 			if err != nil {
 				log.Fatal(log.RCDatabase, "Auth", "Failed to create default user, administrator group does not exist")
 			}
 
 			password := base64.StdEncoding.EncodeToString([]byte(uuid.New().String()))[:12]
-			adminUser := users.User{
+			adminUser := types.User{
 				Username:    "admin",
 				Password:    password,
 				DisplayName: "Goji Admin",
 				Group:       group,
 			}
-			_, err = users.Create(&adminUser)
+			_, err = userService.Create(&adminUser)
 
 			if err != nil {
 				log.Fatal(log.RCDatabase, "Auth", "Could not create admin user: %s", err)

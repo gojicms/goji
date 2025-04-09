@@ -1,6 +1,8 @@
 package database
 
 import (
+	"reflect"
+
 	"github.com/gojicms/goji/core/config"
 	"github.com/gojicms/goji/core/utils/log"
 	"gorm.io/gorm"
@@ -43,6 +45,7 @@ func IsReadOnly() (bool, error) {
 }
 
 func AutoMigrate(target interface{}) {
+	log.Info("Database", "Migrating database for %s", reflect.TypeOf(target))
 	err := GetDB().AutoMigrate(target)
 	if err != nil {
 		log.Fatal(log.RCDatabase, "Database", "Failed to migrate database: %s", err.Error())

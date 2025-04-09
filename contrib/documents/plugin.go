@@ -18,7 +18,7 @@ import (
 // Plugin Service               //
 //////////////////////////////////
 
-var PluginService extend.ServiceDef = Service
+var PluginService extend.PluginDef = Plugin
 
 //////////////////////////////////
 // Resource Definitions         //
@@ -166,10 +166,10 @@ var updateDocResource = extend.ResourceDef{
 }
 
 //////////////////////////////////
-// Service Definition           //
+// Plugin Definition            //
 //////////////////////////////////
 
-var Service = extend.ServiceDef{
+var Plugin = extend.PluginDef{
 	Name:         "documents",
 	FriendlyName: "Documents",
 	Resources: []extend.ResourceDef{

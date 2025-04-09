@@ -6,11 +6,9 @@ import (
 	"strings"
 
 	"github.com/gojicms/goji/core/extend"
-	"github.com/gojicms/goji/core/server"
+	"github.com/gojicms/goji/core/plugins/sessions"
 	"github.com/gojicms/goji/core/server/httpflow"
-	"github.com/gojicms/goji/core/services/auth/users"
-	"github.com/gojicms/goji/core/services/sessions"
-	"github.com/gojicms/goji/core/utils"
+	"github.com/gojicms/goji/core/services"
 	"github.com/gojicms/goji/core/utils/log"
 )
 
@@ -23,53 +21,24 @@ var dashboardTemplate []byte
 
 func resHandler(flow *httpflow.HttpFlow) {
 	r := flow.Request
-	w := flow.Writer
 
-	path := r.URL.Path
+	log.Debug("Admins", "Rendering file: %s", r.URL.Path)
 
-	data := utils.Object{
-		"isAuthenticated": sessions.IsAuthenticated(r),
+	fileService := services.GetServiceOfType[services.FileService]("files")
+
+	if err := fileService.RenderFile(r.URL.Path, flow); err != nil {
+		// RenderFile handles writing the response status and body on error
+		log.Error("Admin", "Error rendering file via resHandler: %s - %v", r.URL.Path, err)
+		// No need to call renderError here as RenderFile wrote the response
 	}
-
-	res, err := server.RenderFile(path, server.RenderOptions{
-		Data: data,
-	})
-	if err != nil {
-		res := server.RenderErrorPage(err.HttpCode, err.Message, server.RenderOptions{
-			Data: data,
-		})
-		w.WriteHeader(res.HttpCode)
-		_, _ = w.Write(res.Body)
-		return
-	}
-
-	w.Header().Set("Content-Type", res.ContentType)
-	w.Header().Set("Cache-Control", "public, max-age=86400")
-	w.WriteHeader(200)
-	_, _ = w.Write(res.Body)
 }
 
 var renderLoginPage = func(flow *httpflow.HttpFlow) {
-	templateData := flow.Get("templateData")
-	if templateData == nil {
-		templateData = utils.Object{}
-	}
-
-	res, err := server.RenderFile("admin/login.html", server.RenderOptions{
-		TemplateRoot: "admin/!partials",
-		Data:         templateData.(utils.Object),
-	})
-
-	if err != nil {
-		res := server.RenderErrorPage(err.HttpCode, err.Message, server.RenderOptions{})
-		flow.WriteHeaders(res.HttpCode)
-		_, _ = flow.Write(res.Body)
+	fileService := services.GetServiceOfType[services.FileService]("files")
+	if err := fileService.RenderTemplateFromPath("admin/login.html", flow); err != nil {
+		renderError(flow, http.StatusInternalServerError, "File Error: "+err.Error())
 		return
 	}
-
-	flow.SetHeader("Content-Type", res.ContentType)
-	flow.WriteHeaders(200)
-	_, _ = flow.Write(res.Body)
 }
 
 var loginHandler = func(flow *httpflow.HttpFlow) {
@@ -91,21 +60,22 @@ var loginPostHandler = func(flow *httpflow.HttpFlow) {
 	password := flow.PostFormValue("password")
 	nonce := flow.PostFormValue("_CSRF")
 
+	userService := services.GetServiceOfType[services.UserService]("users")
+
 	loginError := "Invalid username or password"
 
 	if username == "" || password == "" {
 		loginError = "Username or password is empty"
 	}
 
-	user, err := users.ValidateLogin(username, password)
+	user, err := userService.ValidateLogin(username, password)
 	if err != nil {
 		flow.Append("templateData", "error", loginError)
 		renderLoginPage(flow)
 		return
 	}
-	log.Debug("Admin", "User Found", user)
 
-	if user.HasPermission("admin") == false {
+	if !user.HasPermission("admin") {
 		flow.Append("templateData", "error", "You are not an admin and cannot access this page.")
 		renderLoginPage(flow)
 
@@ -124,14 +94,14 @@ var rootHandler = func(flow *httpflow.HttpFlow) {
 	flow.Redirect("/admin/login", http.StatusFound)
 }
 
+//////////////////////////////////
+// Resource Definitions         //
+//////////////////////////////////
+
 var rootResource = extend.ResourceDef{
 	HttpValidator: extend.NewHttpValidator(http.MethodGet, "/admin/?"),
 	Handler:       rootHandler,
 }
-
-//////////////////////////////////
-// Resource Definitions         //
-//////////////////////////////////
 
 var publicResource = extend.ResourceDef{
 	HttpValidator: extend.NewHttpValidator(http.MethodGet, "/admin/public/.+"),
@@ -159,12 +129,14 @@ var logoutResource = extend.ResourceDef{
 }
 
 //////////////////////////////////
-// Service Definition           //
+// Plugin Definition           //
 //////////////////////////////////
 
-var Service = extend.ServiceDef{
-	Name:         "administration",
-	FriendlyName: "Administration Panel Service",
+var Plugin = extend.PluginDef{
+	Name:         "admin",
+	FriendlyName: "Admin",
+	Description:  "Administration interface for Goji",
+	Internal:     true,
 	Resources: []extend.ResourceDef{
 		publicResource,
 		loginResource,
@@ -181,8 +153,8 @@ var Service = extend.ServiceDef{
 		extend.AddAdminPage(extend.AdminPage{
 			Route: "dashboard",
 			Render: func(flow *httpflow.HttpFlow) ([]byte, error) {
-				flow.Append("templateData", "title", "Goji - Welcome")
-				return server.RenderTemplate(dashboardTemplate, flow.Get("templateData"), server.DefaultRenderOptions)
+				fileService := services.GetServiceOfType[services.FileService]("files")
+				return fileService.ExecuteTemplate(dashboardTemplate, flow)
 			},
 		})
 
@@ -199,6 +171,7 @@ var Service = extend.ServiceDef{
 				flow.Terminate()
 			}
 		}))
+
 		return nil
 	},
 }

@@ -48,12 +48,12 @@ func (server *GojiServerMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// We'll check services first; in the future, we'll cache requests to which resource/handler they may be tied to
-	for _, service := range extend.GetServices() {
-		log.Debug("Server", "Service %s", service.FriendlyName)
+	for _, service := range extend.GetPlugins() {
+		log.Debug("Server", "Plugin %s", service.FriendlyName)
 		for _, resource := range service.Resources {
 			log.Debug("Server", "Resource %s", resource.Path)
 			if resource.CanHandle(flow) {
-				log.Debug("Server", "Running Service %s > Resource %s", service.FriendlyName, resource.Path)
+				log.Debug("Server", "Running Plugin %s > Resource %s", service.FriendlyName, resource.Path)
 				resource.Handler(flow)
 				return
 			}

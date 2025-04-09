@@ -2,12 +2,9 @@ package site
 
 import (
 	_ "embed"
-	"strings"
 
 	"github.com/gojicms/goji/core/database"
 	"github.com/gojicms/goji/core/extend"
-	"github.com/gojicms/goji/core/server"
-	"github.com/gojicms/goji/core/server/httpflow"
 )
 
 //go:embed "site.gohtml"
@@ -61,42 +58,16 @@ func SyncSiteConfigs() {
 }
 
 //////////////////////////////////
-// Service Definition           //
+// Plugin Definition           //
 //////////////////////////////////
 
-var Service = extend.ServiceDef{
-	Name:         "site_config",
-	FriendlyName: "Site Configuration",
+var Plugin = extend.PluginDef{
+	Name:         "site",
+	FriendlyName: "Site",
+	Description:  "Site configuration and management",
+	Internal:     true,
 	Resources:    []extend.ResourceDef{},
 	OnInit: func() error {
-		database.AutoMigrate(SiteConfig{})
-
-		SyncSiteConfigs()
-
-		extend.AddSideMenuItem("Site", "site", 0, "", "admin")
-
-		extend.AddAdminPage(extend.AdminPage{
-			Route: "site",
-			Render: func(flow *httpflow.HttpFlow) ([]byte, error) {
-				if flow.Request.Method == "POST" {
-					err := flow.Request.ParseForm()
-					if err == nil {
-						for k, v := range flow.Request.Form {
-							SetSiteConfig(k, strings.Join(v, ","))
-						}
-					}
-				}
-
-				data, _ := server.RenderTemplate(siteConfigTemplate, flow.Get("templateData"), server.DefaultRenderOptions)
-				return data, nil
-			},
-			Permission: "",
-		})
-
-		extend.AddMiddleware(extend.NewMiddleware("*", "*", 10, func(flow *httpflow.HttpFlow) {
-			flow.Append("templateData", "site", siteConfigCache)
-		}))
-
 		return nil
 	},
 }

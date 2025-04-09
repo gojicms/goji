@@ -1,7 +1,7 @@
 {{style "/admin/public/css/login.css"}}
 {{script "/admin/public/js/core.js" "module" }}
-{{partial "head.html"}}
-{{partial "body_start.html"}}
+{{partial "/head.html"}}
+{{partial "/body_start.html"}}
 <main class="login">
     {{ if .error }}
     <gc-alert type="error" inline>{{.error}}</gc-alert>
@@ -25,3 +25,4 @@
 </main>
 {{partial "body_end.html"}}
 {{partial "footer.html"}}
+

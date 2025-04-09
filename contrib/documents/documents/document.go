@@ -4,7 +4,7 @@ import (
 	"regexp"
 
 	"github.com/gojicms/goji/core/database"
-	"github.com/gojicms/goji/core/services/auth/users"
+	"github.com/gojicms/goji/core/types"
 	"github.com/gojicms/goji/core/utils/log"
 	"gorm.io/gorm"
 )
@@ -14,7 +14,7 @@ type Document struct {
 	Title       string      `json:"title" gorm:"size:255"`
 	Description string      `json:"description" gorm:"size:1000"`
 	Content     string      `json:"content" gorm:"type:text"`
-	CreatedBy   *users.User `json:"-" gorm:"foreignKey:CreatedById;constraint:OnUpdate:NO ACTION,OnDelete:SET NULL;"`
+	CreatedBy   *types.User `json:"-" gorm:"foreignKey:CreatedById;constraint:OnUpdate:NO ACTION,OnDelete:SET NULL;"`
 	CreatedById *uint       `json:"-" gorm:"index"`
 }
 
