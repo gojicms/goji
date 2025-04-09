@@ -91,25 +91,46 @@ var Plugin = extend.PluginDef{
 		userService := services.GetServiceOfType[services.UserService]("users")
 		groupService := services.GetServiceOfType[services.GroupService]("groups")
 
-		// Ensure the default groups exist
-		if c, _ := groupService.Count(); c == 0 {
-			_ = groupService.Create(&types.Group{
-				Name: "administrator",
-				Permissions: utils.CSV{
+		// Create or update the default groups
+		defaultGroups := []struct {
+			name        string
+			permissions utils.CSV
+		}{
+			{
+				name: "administrator",
+				permissions: utils.CSV{
 					"admin",
-					"user:view", "user:edit", "user:delete", "user:add",
-					"document:view", "document:add", "document:edit", "document:delete"},
-			})
-			_ = groupService.Create(&types.Group{
-				Name:        "editor",
-				Permissions: utils.CSV{"admin", "document:view", "document:add", "document:edit", "document:delete"},
-			})
-			_ = groupService.Create(&types.Group{
-				Name:        "user",
-				Permissions: utils.CSV{},
-			})
-			if c, _ = groupService.Count(); c == 0 {
-				log.Fatal(log.RCDatabase, "Auth", "Failed to create default user groups")
+					"document:view", "document:add", "document:edit", "document:delete",
+					"media:view", "media:add", "media:edit", "media:delete",
+					"user:view", "user:add", "user:edit", "user:delete"},
+			},
+			{
+				name: "editor",
+				permissions: utils.CSV{
+					"admin",
+					"document:view", "document:add", "document:edit", "document:delete",
+					"media:view", "media:add", "media:edit", "media:delete"},
+			},
+			{
+				name:        "user",
+				permissions: utils.CSV{},
+			},
+		}
+
+		for _, group := range defaultGroups {
+			existingGroup, err := groupService.GetByName(group.name)
+			if err != nil {
+				// Group doesn't exist, create it
+				_ = groupService.Create(&types.Group{
+					Name:        group.name,
+					Permissions: group.permissions,
+					Internal:    true,
+				})
+			} else {
+				// Group exists, update it
+				existingGroup.Permissions = group.permissions
+				existingGroup.Internal = true
+				_ = groupService.Update(existingGroup)
 			}
 		}
 

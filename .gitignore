@@ -49,3 +49,5 @@ docker-compose.yml
 Dockerfile
 deploy.sh
 deploys/
+
+*storybook.log

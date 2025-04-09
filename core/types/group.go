@@ -10,4 +10,5 @@ type Group struct {
 	gorm.Model
 	Name        string    `gorm:"unique"`
 	Permissions utils.CSV `gorm:"type:VARCHAR(512)"`
+	Internal    bool      `gorm:"default:false"`
 }

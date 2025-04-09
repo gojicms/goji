@@ -12,6 +12,12 @@ import (
 	"github.com/gojicms/goji/core/utils"
 )
 
+//go:embed 403.gohtml
+var forbiddenTemplate []byte
+
+//go:embed 404.gohtml
+var notFoundTemplate []byte
+
 func sideNavToScopedObject(user types.User, path string, sidenav []*extend.SideMenuItem) []utils.Object {
 	var menu []utils.Object
 
@@ -55,6 +61,8 @@ func subRouteHandler(flow *httpflow.HttpFlow) {
 	r := flow.Request
 	path := r.URL.Path
 
+	fileService := services.GetServiceOfType[services.FileService]("files")
+
 	// Get the current user
 	user := flow.Get("user").(*types.User)
 	flow.Append("templateData", "sideNav", sideNavToScopedObject(*user, path, extend.GetSideMenuItems()))
@@ -67,9 +75,6 @@ func subRouteHandler(flow *httpflow.HttpFlow) {
 				flow.Append("admin_meta", k, v)
 			}
 
-			// Get the file service
-			fileService := services.GetServiceOfType[services.FileService]("files")
-
 			// Try to render the page content
 			content, err := route.Render(flow)
 			if err != nil {
@@ -79,19 +84,34 @@ func subRouteHandler(flow *httpflow.HttpFlow) {
 
 			// Add the content to the template data
 			flow.Append("templateData", "contents", string(content))
-
-			// Render the editor template
-			if err := fileService.RenderTemplateFromPath("admin/editor.html", flow); err != nil {
-				renderError(flow, http.StatusInternalServerError, "Failed to render editor: "+err.Error())
+		} else {
+			content, err := fileService.ExecuteTemplate(forbiddenTemplate, flow)
+			if err != nil {
+				renderError(flow, http.StatusInternalServerError, "Failed to render forbidden page: "+err.Error())
 				return
 			}
-		} else {
-			renderError(flow, http.StatusForbidden, "You do not have permission to access this page")
+
+			flow.Append("templateData", "contents", string(content))
+
 			return
 		}
-		return
+	} else {
+		content, err := fileService.ExecuteTemplate(notFoundTemplate, flow)
+		if err != nil {
+			// If we can't execute the 404 template, fall back to plain text
+			flow.WriteHeaders(http.StatusNotFound)
+			flow.SetHeader("Content-Type", "text/plain")
+			_, _ = flow.Write([]byte("The requested admin page could not be found"))
+			return
+		}
+
+		// Add the content to the template data
+		flow.Append("templateData", "contents", string(content))
 	}
 
-	// TODO: Handle no route
-	renderError(flow, http.StatusNotFound, "Not Found")
+	// Render the editor template with the content from templateData
+	if err := fileService.RenderTemplateFromPath("admin/editor.html", flow); err != nil {
+		renderError(flow, http.StatusInternalServerError, "Failed to render editor: "+err.Error())
+		return
+	}
 }

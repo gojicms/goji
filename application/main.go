@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	diskmedia "github.com/gojicms/goji/contrib/disk-media"
 	documents "github.com/gojicms/goji/contrib/documents"
 	"github.com/gojicms/goji/core"
 	"github.com/gojicms/goji/core/config"
@@ -46,6 +47,7 @@ func main() {
 	// Plugins can be loaded dynamically by placing them in the plugins directory,
 	// or you can statically load them here.
 	extend.RegisterPlugin(&documents.Plugin)
+	extend.RegisterPlugin(&diskmedia.Plugin)
 
 	// Start server
 	core.StartServer()

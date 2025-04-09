@@ -147,6 +147,7 @@ var Plugin = extend.PluginDef{
 	},
 	OnInit: func() error {
 		extend.AddSideMenuItem("Home", "dashboard", 0, "", "")
+		extend.AddSideMenuItem("Media", "#", 250, "", "admin")
 		extend.AddSideMenuItem("System", "#", 500, "", "admin")
 		extend.AddSideMenuItem("Logout", "logout", 1000, "System", "")
 

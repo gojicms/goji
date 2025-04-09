@@ -202,3 +202,8 @@ func (p *GroupProvider) Count() (int64, error) {
 	}
 	return count, nil
 }
+
+func (p *GroupProvider) Update(group *types.Group) error {
+	db := database.GetDB()
+	return db.Save(group).Error
+}

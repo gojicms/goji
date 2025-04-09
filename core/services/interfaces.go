@@ -1,6 +1,9 @@
 package services
 
 import (
+	"io"
+	"mime/multipart"
+
 	"github.com/gojicms/goji/core/server/httpflow"
 	"github.com/gojicms/goji/core/types"
 )
@@ -59,5 +62,50 @@ type GroupService interface {
 	GetByName(name string) (*types.Group, error)
 	GetAll() ([]*types.Group, error)
 	Create(group *types.Group) error
+	Update(group *types.Group) error
 	Count() (int64, error)
+}
+
+// MediaSource defines how a storage backend should work
+type MediaSource interface {
+	// Name returns the unique identifier for this source
+	Name() string
+
+	// FriendlyName returns a human-readable name
+	FriendlyName() string
+
+	// Store stores a file and returns its path/identifier
+	Store(file *multipart.FileHeader, flow *httpflow.HttpFlow) (string, error)
+
+	// Retrieve gets a file by its path/identifier
+	Retrieve(path string) (io.Reader, error)
+
+	// Delete removes a file
+	Delete(path string) error
+
+	// List files in a directory/path
+	List(path string) ([]string, error)
+}
+
+// MediaService interface for the main service
+type MediaService interface {
+	Service
+
+	// RegisterSource registers a new media source
+	RegisterSource(source MediaSource)
+
+	// GetSource returns a source by name
+	GetSource(name string) (MediaSource, error)
+
+	// Upload handles file uploads using the specified source
+	Upload(sourceName string, file *multipart.FileHeader, flow *httpflow.HttpFlow) (string, error)
+
+	// Get retrieves a file from the specified source
+	Get(sourceName string, path string) (io.Reader, error)
+
+	// Delete removes a file from the specified source
+	Delete(sourceName string, path string) error
+
+	// List files in a directory from the specified source
+	List(sourceName string, path string) ([]string, error)
 }
